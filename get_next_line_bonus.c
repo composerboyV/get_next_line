@@ -1,16 +1,16 @@
 /* ************************************************************************** */
 /*                                                                            */
 /*                                                        :::      ::::::::   */
-/*   get_next_line.c                                    :+:      :+:    :+:   */
+/*   get_next_line_bonus.c                              :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
 /*   By: junkwak <marvin@42.fr>                     +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2024/04/11 21:47:24 by junkwak           #+#    #+#             */
-/*   Updated: 2024/04/13 16:36:39 by junkwak          ###   ########.fr       */
+/*   Updated: 2024/04/13 16:46:32 by junkwak          ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
-#include "get_next_line.h"
+#include "get_next_line_bonus.h"
 #include <stdio.h>
 #include <stdlib.h>
 #include <unistd.h>
@@ -98,44 +98,52 @@ char	*ft_get_line(char *str, int fd)
 
 char	*get_next_line(int fd)
 {
-	static char	*str;
+	static char	*str[2048];
 	char		*save;
 	int			i;
 
 	i = 0;
-	if (!str)
+	if (!str[fd])
 	{
-		str = (char *)malloc(1);
-		str[0] = '\0';
-		if (!str)
+		str[fd] = (char *)malloc(1);
+		*str[fd] = '\0';
+		if (!str[fd])
 			return (0);
 	}
 	if (fd < 2 || BUFFER_SIZE <= 0)
 	{
-		free(str);
+		free(str[fd]);
 		return (0);
 	}
-	str = ft_get_line(str, fd);
-	if (!str)
+	str[fd] = ft_get_line(str[fd], fd);
+	if (!str[fd])
 		return (0);
-	save = get_linecheck(str);
-	str = get_line(str, i);
+	save = get_linecheck(str[fd]);
+	str[fd] = get_line(str[fd], i);
 	return (save);
 }
-/*
+
 int    main(void)
 {
-    char        *ret;
-    int        fd;
+    char        *ret1;
+    char        *ret2;
+    int        fd1;
+    int		fd2;
     int	i;
 
     i = 0;
-    fd = open("test2", O_RDONLY);
+    fd1 = open("test2", O_RDONLY);
+    fd2 = open("test2", O_RDONLY);
     while (i++ < 10)
     {
-	ret = get_next_line(fd);
-        printf("ret : %s\n", ret);
-	free(ret);
+	ret1 = get_next_line(fd1);
+	ret2 = get_next_line(fd2);
+        printf("ret1 : %s", ret1);
+        printf("ret2 : %s", ret2);
+	free(ret1);
+	free(ret2);
     }
+    close(fd1);
+    close(fd2);
 }
-*/
+
